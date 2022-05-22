@@ -2,6 +2,8 @@ const express = require("express");
 const bodyParser = require("body-parser");
 const request = require("request");
 const mailchimp = require("@mailchimp/mailchimp_marketing");
+require('dotenv').config();
+
 
 const app = express();
 
@@ -13,10 +15,10 @@ app.use(bodyParser.urlencoded({
 app.get("/", function(req, res) {
   res.sendFile(__dirname + "/signup.html");
 });
-
+// --------------------MAILCHIMP CONFIGURATIONS----------------------\\
 mailchimp.setConfig({
 
- apiKey: "3b78927d2bac923578119e525e3d15a9-us17",
+ apiKey: process.env.API_KEY,
 
  server: "us17"
 });
@@ -43,11 +45,15 @@ const response = await mailchimp.lists.addListMember(listId, {
  LNAME: subscribingUser.lastName
 }
 });
+// --------------------ED OF MAILCHIMP CONFIGURATIONS----------------------\\
 
 
+// --------------------SUCESSFULL REGISTRATION----------------------\\
  res.sendFile(__dirname + "/success.html")
+ console.log("secess");
 };
 
+// --------------------IF FAILURE REDIRECT TO HOMEPAGE----------------------\\
 
  run().catch(e => res.sendFile(__dirname + "/failure.html"));
 });
@@ -55,6 +61,8 @@ const response = await mailchimp.lists.addListMember(listId, {
 app.post("/failure", function(req, res){
   res.redirect("/")
 });
+
+// --------------------SERVER----------------------\\
 
 app.listen(process.env.PORT || 3000, function() {
   console.log("server is running on port 3000");
